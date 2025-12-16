@@ -90,7 +90,14 @@ curl http://localhost:8000/health
 - Few-shot examples for accuracy
 - Batch processing support
 
-### Phase 7-11: In Progress
+### Phase 7: Webhook & Git Integration ✅
+- GitHub webhook endpoint with HMAC validation
+- Pull request and push event handlers
+- GitHub API client for PR comments
+- Celery task orchestration for scans
+- Automated inline PR comments
+
+### Phase 8-11: In Progress
 See `implementation_plan.md` for detailed roadmap.
 
 ## API Documentation

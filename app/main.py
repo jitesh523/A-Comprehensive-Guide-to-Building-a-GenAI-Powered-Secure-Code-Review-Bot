@@ -20,6 +20,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Register routers
+from app.api.webhooks import router as webhook_router
+app.include_router(webhook_router)
+
 
 class HealthResponse(BaseModel):
     status: str
@@ -43,7 +47,8 @@ async def root():
     return {
         "message": "Secure Code Review Bot API",
         "docs": "/docs",
-        "health": "/health"
+        "health": "/health",
+        "webhook": "/webhook/github"
     }
 
 
