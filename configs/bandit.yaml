@@ -1,0 +1,20 @@
+### Bandit Config for OWASP Top 10 (Hybrid Analysis)
+# We deliberately include 'assert_used' (B101) and others that are noisy
+# because the LLM will filter the context later.
+
+profiles:
+  owasp_hybrid:
+    include:
+      - B101  # assert_used (A05: Security Misconfiguration)
+      - B102  # exec_used (A03: Injection)
+      - B105  # hardcoded_password_string (A07: Auth Failures)
+      - B301  # pickle (A08: Integrity Failures)
+      - B303  # md5 (A02: Cryptographic Failures)
+      - B324  # hashlib (A02: Cryptographic Failures)
+      - B501  # request_with_no_cert_validation (A07: Auth Failures)
+      - B601  # paramiko_calls (A03: Injection)
+      - B602  # subprocess_popen_with_shell_equals_true (A03: Injection)
+      - B608  # hardcoded_sql_expressions (A03: Injection)
+
+# Do not exclude any paths here; we handle exclusions in the application logic
+exclude_dirs: []

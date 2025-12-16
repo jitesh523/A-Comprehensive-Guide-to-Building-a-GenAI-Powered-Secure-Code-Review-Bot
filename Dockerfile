@@ -25,3 +25,13 @@ EXPOSE 8000
 
 # Default command (overridden in docker-compose)
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Install Node.js for ESLint
+RUN apt-get update && apt-get install -y \
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install npm dependencies
+COPY package.json .
+RUN npm install
