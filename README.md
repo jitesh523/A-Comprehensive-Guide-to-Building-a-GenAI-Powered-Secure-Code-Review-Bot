@@ -61,7 +61,23 @@ curl http://localhost:8000/health
 - Docker Compose configuration
 - Environment configuration
 
-### Phase 2-11: In Progress
+### Phase 2: Python SAST (Bandit) ✅
+- OWASP Top 10 configuration
+- JSON output parsing
+- Normalized finding schema
+
+### Phase 3: JavaScript SAST (ESLint) ✅
+- Security plugins (security + no-unsanitized)
+- Flat config format
+- Unified finding schema
+
+### Phase 4: Context Extraction (Tree-sitter) ✅
+- Unified API for Python and JavaScript
+- Function/class detection
+- Import extraction
+- Fallback to line-based context
+
+### Phase 5-11: In Progress
 See `implementation_plan.md` for detailed roadmap.
 
 ## API Documentation
