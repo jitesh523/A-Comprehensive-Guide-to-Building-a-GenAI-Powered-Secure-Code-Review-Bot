@@ -77,7 +77,13 @@ curl http://localhost:8000/health
 - Import extraction
 - Fallback to line-based context
 
-### Phase 5-11: In Progress
+### Phase 5: Privacy & Sanitization (Presidio) ✅
+- Microsoft Presidio for PII detection
+- Custom regex for secret detection
+- Redaction logging and validation
+- File path sanitization
+
+### Phase 6-11: In Progress
 See `implementation_plan.md` for detailed roadmap.
 
 ## API Documentation
