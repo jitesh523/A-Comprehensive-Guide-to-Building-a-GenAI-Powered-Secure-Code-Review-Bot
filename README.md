@@ -104,7 +104,7 @@ curl http://localhost:8000/health
 
 ## Features
 
-✅ **Scans Python and JavaScript** automatically  
+✅ **Scans Python, JavaScript, TypeScript, Go, and Rust** automatically  
 ✅ **AI-powered verification** using GPT-4  
 ✅ **Privacy-safe** - strips secrets/PII before sending to AI  
 ✅ **Inline PR comments** with fix suggestions  
@@ -142,7 +142,7 @@ GitHub PR
     ↓
 Webhook → FastAPI → Celery Queue
     ↓
-SAST Scan (Bandit/ESLint) → finds 50 issues
+SAST Scan (Bandit/ESLint/Gosec/Clippy) → finds 50 issues
     ↓
 Extract code context (Tree-sitter)
     ↓
@@ -154,6 +154,13 @@ Post PR comments
 ```
 
 **Tech stack**: FastAPI, Celery, Redis, PostgreSQL, Tree-sitter, Presidio, OpenAI GPT-4, Docker
+
+**Supported Languages**:
+- **Python** - Bandit SAST scanner
+- **JavaScript** - ESLint with security plugins
+- **TypeScript** - ESLint with TypeScript parser
+- **Go** - Gosec security scanner
+- **Rust** - cargo-audit + cargo-clippy
 
 ---
 
@@ -171,7 +178,7 @@ Post PR comments
 A: No. Scans run in background (1-3 minutes). PRs aren't blocked.
 
 **Q: What languages are supported?**  
-A: Python and JavaScript currently. More coming soon.
+A: Python, JavaScript, TypeScript, Go, and Rust. More coming soon.
 
 **Q: Is my code sent to OpenAI?**  
 A: Only small snippets (10-20 lines) with secrets/PII removed.

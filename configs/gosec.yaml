@@ -1,0 +1,27 @@
+# Gosec Configuration
+# https://github.com/securego/gosec#configuration
+
+# Global settings
+global:
+  nosec: false
+  show-ignored: false
+  confidence: medium
+  severity: medium
+
+# Rules to exclude (add rule IDs to disable specific checks)
+exclude:
+  # Example: G104 - Audit errors not checked
+  # - G104
+
+# Rules to include (leave empty to include all)
+include: []
+
+# Exclude specific files or directories
+exclude-dirs:
+  - vendor
+  - third_party
+  - node_modules
+  - testdata
+
+# Exclude generated files
+exclude-generated: true

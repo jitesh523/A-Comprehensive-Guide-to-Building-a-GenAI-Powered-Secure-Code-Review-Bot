@@ -22,7 +22,10 @@ app.add_middleware(
 
 # Register routers
 from app.api.webhooks import router as webhook_router
+from app.api.rules import router as rules_router
+
 app.include_router(webhook_router)
+app.include_router(rules_router)
 
 
 class HealthResponse(BaseModel):

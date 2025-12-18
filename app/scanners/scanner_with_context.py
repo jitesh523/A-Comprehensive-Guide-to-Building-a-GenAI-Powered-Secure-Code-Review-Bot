@@ -6,8 +6,12 @@ This module integrates SAST scanners with Tree-sitter context extraction.
 from typing import List, Dict, Any
 from app.scanners.bandit_scanner import BanditScanner
 from app.scanners.eslint_scanner import ESLintScanner
+from app.scanners.gosec_scanner import GosecScanner
+from app.scanners.rust_scanner import RustScanner
+from app.scanners.typescript_scanner import TypeScriptScanner
 from app.context.tree_sitter_slicer import TreeSitterContextSlicer
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +24,9 @@ class ScannerWithContext:
     def __init__(self):
         self.bandit = BanditScanner()
         self.eslint = ESLintScanner()
+        self.gosec = GosecScanner()
+        self.rust_scanner = RustScanner()
+        self.typescript_scanner = TypeScriptScanner()
         self.context_slicer = TreeSitterContextSlicer()
     
     async def scan_with_context(
@@ -32,16 +39,23 @@ class ScannerWithContext:
         
         Args:
             target_path: Path to scan
-            language: "python" or "javascript"
+            language: "python", "javascript", "go", "rust", or "typescript"
             
         Returns:
             List of findings with extracted context
         """
         # Run appropriate scanner
-        if language.lower() == "python":
+        language_lower = language.lower()
+        if language_lower == "python":
             findings = await self.bandit.scan(target_path)
-        elif language.lower() in ["javascript", "js"]:
+        elif language_lower in ["javascript", "js"]:
             findings = await self.eslint.scan(target_path)
+        elif language_lower == "go":
+            findings = await self.gosec.scan(target_path)
+        elif language_lower == "rust":
+            findings = await self.rust_scanner.scan(target_path)
+        elif language_lower in ["typescript", "ts"]:
+            findings = await self.typescript_scanner.scan(target_path)
         else:
             raise ValueError(f"Unsupported language: {language}")
         
@@ -71,35 +85,54 @@ class ScannerWithContext:
         
         return enriched_findings
     
+    def detect_language(self, file_path: str) -> str:
+        """
+        Detect programming language from file extension.
+        
+        Args:
+            file_path: Path to file
+            
+        Returns:
+            Language name or None if not supported
+        """
+        ext = os.path.splitext(file_path)[1].lower()
+        language_map = {
+            '.py': 'python',
+            '.js': 'javascript',
+            '.jsx': 'javascript',
+            '.ts': 'typescript',
+            '.tsx': 'typescript',
+            '.go': 'go',
+            '.rs': 'rust',
+        }
+        return language_map.get(ext)
+    
     async def scan_repository(self, repo_path: str) -> Dict[str, List[Dict[str, Any]]]:
         """
-        Scan entire repository for both Python and JavaScript.
+        Scan entire repository for all supported languages.
         
         Args:
             repo_path: Path to repository
             
         Returns:
-            Dictionary with 'python' and 'javascript' findings
+            Dictionary with findings grouped by language
         """
         results = {
             "python": [],
-            "javascript": []
+            "javascript": [],
+            "typescript": [],
+            "go": [],
+            "rust": []
         }
         
-        try:
-            # Scan Python files
-            python_findings = await self.scan_with_context(repo_path, "python")
-            results["python"] = python_findings
-            logger.info(f"Found {len(python_findings)} Python findings")
-        except Exception as e:
-            logger.error(f"Python scan failed: {str(e)}")
+        languages_to_scan = ["python", "javascript", "typescript", "go", "rust"]
         
-        try:
-            # Scan JavaScript files
-            js_findings = await self.scan_with_context(repo_path, "javascript")
-            results["javascript"] = js_findings
-            logger.info(f"Found {len(js_findings)} JavaScript findings")
-        except Exception as e:
-            logger.error(f"JavaScript scan failed: {str(e)}")
+        for language in languages_to_scan:
+            try:
+                findings = await self.scan_with_context(repo_path, language)
+                results[language] = findings
+                logger.info(f"Found {len(findings)} {language} findings")
+            except Exception as e:
+                logger.error(f"{language.capitalize()} scan failed: {str(e)}")
         
         return results

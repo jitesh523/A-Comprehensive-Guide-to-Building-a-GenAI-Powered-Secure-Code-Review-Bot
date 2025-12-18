@@ -37,7 +37,7 @@ class Finding(Base):
     scan_job_id = Column(Integer, ForeignKey("scan_jobs.id"), nullable=False)
     
     # SAST metadata
-    tool = Column(String(50), nullable=False)  # bandit, eslint
+    tool = Column(String(50), nullable=False)  # bandit, eslint, gosec, cargo-audit, cargo-clippy
     rule_id = Column(String(50), nullable=False, index=True)
     severity = Column(String(20), nullable=False)
     description = Column(Text, nullable=False)
@@ -63,6 +63,41 @@ class Finding(Base):
     
     def __repr__(self):
         return f"<Finding {self.tool}:{self.rule_id} {self.llm_decision}>"
+
+
+class CustomRule(Base):
+    """Custom SAST rule configuration"""
+    __tablename__ = "custom_rules"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    language = Column(String(50), nullable=False, index=True)  # python, javascript, go, rust, typescript
+    tool = Column(String(50), nullable=False, index=True)  # bandit, eslint, gosec, cargo-clippy
+    rule_id = Column(String(100), nullable=False, index=True)
+    enabled = Column(Boolean, default=True, index=True)
+    severity_override = Column(String(20), nullable=True)  # Override default severity
+    custom_message = Column(Text, nullable=True)  # Custom message to display
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def __repr__(self):
+        return f"<CustomRule {self.tool}:{self.rule_id} enabled={self.enabled}>"
+
+
+class RuleConfiguration(Base):
+    """Global rule configuration settings"""
+    __tablename__ = "rule_configurations"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    key = Column(String(100), unique=True, nullable=False, index=True)
+    value = Column(JSON, nullable=False)
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def __repr__(self):
+        return f"<RuleConfiguration {self.key}>"
 
 
 class AuditLog(Base):

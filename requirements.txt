@@ -20,6 +20,9 @@ bandit==1.7.6
 tree-sitter==0.21.0
 tree-sitter-python==0.21.0
 tree-sitter-javascript==0.21.0
+tree-sitter-go==0.21.0
+tree-sitter-rust==0.21.0
+tree-sitter-typescript==0.21.0
 
 # Privacy & Sanitization
 presidio-analyzer==2.2.354
