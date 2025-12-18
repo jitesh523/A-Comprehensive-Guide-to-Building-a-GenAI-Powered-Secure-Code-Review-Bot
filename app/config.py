@@ -46,6 +46,13 @@ class Settings(BaseSettings):
     ENABLE_PII_REDACTION: bool = True
     ENABLE_SECRET_REDACTION: bool = True
     
+    # Notifications
+    SLACK_WEBHOOK_URL: Optional[str] = None
+    DISCORD_WEBHOOK_URL: Optional[str] = None
+    ENABLE_SLACK_NOTIFICATIONS: bool = False
+    ENABLE_DISCORD_NOTIFICATIONS: bool = False
+    NOTIFICATION_MIN_SEVERITY: str = "HIGH"  # Only notify for HIGH and CRITICAL
+    
     class Config:
         env_file = ".env"
         case_sensitive = True

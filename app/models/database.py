@@ -100,6 +100,54 @@ class RuleConfiguration(Base):
         return f"<RuleConfiguration {self.key}>"
 
 
+class MetricSnapshot(Base):
+    """Metrics snapshot for tracking accuracy over time"""
+    __tablename__ = "metric_snapshots"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime, default=datetime.utcnow, index=True)
+    period = Column(String(20), nullable=False, index=True)  # daily, weekly, monthly
+    language = Column(String(50), nullable=True, index=True)
+    tool = Column(String(50), nullable=True, index=True)
+    severity = Column(String(20), nullable=True, index=True)
+    
+    # Confusion matrix values
+    true_positives = Column(Integer, default=0)
+    false_positives = Column(Integer, default=0)
+    false_negatives = Column(Integer, default=0)
+    true_negatives = Column(Integer, default=0)
+    
+    # Calculated metrics
+    precision = Column(Float, nullable=True)
+    recall = Column(Float, nullable=True)
+    f1_score = Column(Float, nullable=True)
+    
+    # Additional stats
+    total_findings = Column(Integer, default=0)
+    total_scans = Column(Integer, default=0)
+    
+    def __repr__(self):
+        return f"<MetricSnapshot {self.period} {self.timestamp} P={self.precision:.2f} R={self.recall:.2f} F1={self.f1_score:.2f}>"
+
+
+class FeedbackEntry(Base):
+    """User feedback on findings"""
+    __tablename__ = "feedback_entries"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    finding_id = Column(Integer, ForeignKey("findings.id"), nullable=False, index=True)
+    user_github_username = Column(String(255), nullable=True)
+    feedback_type = Column(String(20), nullable=False, index=True)  # true_positive, false_positive, false_negative
+    comment = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    
+    # Relationship
+    finding = relationship("Finding", backref="feedback_entries")
+    
+    def __repr__(self):
+        return f"<FeedbackEntry {self.feedback_type} for Finding#{self.finding_id}>"
+
+
 class AuditLog(Base):
     """Audit log for tracking system actions"""
     __tablename__ = "audit_logs"
