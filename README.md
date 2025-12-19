@@ -162,6 +162,12 @@ Post PR comments
 - **Go** - Gosec security scanner
 - **Rust** - cargo-audit + cargo-clippy
 
+**CI/CD Integration**:
+- **GitHub Actions** - Automated PR scanning with SARIF upload
+- **GitLab CI** - Security dashboard integration
+- **Jenkins** - Parallel scanning with SonarQube support
+- **CLI** - Works with any CI/CD platform
+
 ---
 
 ## Documentation
@@ -169,6 +175,24 @@ Post PR comments
 - **[API Docs](docs/API.md)** - Webhook endpoints
 - **[Deployment Guide](docs/DEPLOYMENT.md)** - Production setup
 - **[Usage Examples](docs/USAGE.md)** - Real scenarios
+- **[Multi-Language Support](docs/MULTI_LANGUAGE.md)** - Language-specific details
+- **[CI/CD Integration](docs/CICD_INTEGRATION.md)** - GitHub Actions, GitLab CI, Jenkins
+
+---
+
+## CI/CD Quick Start
+
+```bash
+# Install
+pip install -r requirements.txt
+
+# Scan your code
+python -m app.cli scan --path . --format sarif --fail-on high
+
+# Use in GitHub Actions (see .github/workflows/security-scan.yml)
+# Use in GitLab CI (see .gitlab-ci.yml)
+# Use in Jenkins (see Jenkinsfile)
+```
 
 ---
 

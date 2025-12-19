@@ -1,0 +1,48 @@
+stages:
+  - security
+
+security_scan:
+  stage: security
+  image: python:3.11
+  
+  before_script:
+    # Install system dependencies
+    - apt-get update && apt-get install -y nodejs npm golang-go
+    
+    # Install Rust
+    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    - source $HOME/.cargo/env
+    
+    # Install security tools
+    - pip install bandit
+    - npm install -g eslint eslint-plugin-security
+    - go install github.com/securego/gosec/v2/cmd/gosec@latest
+    - cargo install cargo-audit
+    - rustup component add clippy
+    
+    # Install Secure Code Bot
+    - pip install -r requirements.txt
+    - pip install click
+  
+  script:
+    - |
+      python -m app.cli scan \
+        --path . \
+        --format json \
+        --output security-results.json \
+        --fail-on high
+  
+  artifacts:
+    when: always
+    reports:
+      sast: security-results.json
+    paths:
+      - security-results.json
+    expire_in: 30 days
+  
+  allow_failure: false
+  
+  only:
+    - merge_requests
+    - main
+    - develop

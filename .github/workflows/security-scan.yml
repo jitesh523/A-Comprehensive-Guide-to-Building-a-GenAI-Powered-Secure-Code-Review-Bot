@@ -1,0 +1,120 @@
+name: Security Scan
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  security-scan:
+    name: Security Code Review
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better analysis
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+      
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      
+      - name: Install security tools
+        run: |
+          # Python tools
+          pip install bandit
+          
+          # JavaScript/TypeScript tools
+          npm install -g eslint eslint-plugin-security
+          
+          # Go tools
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          
+          # Rust tools
+          cargo install cargo-audit
+          rustup component add clippy
+      
+      - name: Install Secure Code Bot
+        run: |
+          pip install -r requirements.txt
+          pip install click  # For CLI
+      
+      - name: Run security scan
+        id: scan
+        run: |
+          python -m app.cli scan \
+            --path . \
+            --format sarif \
+            --output security-results.sarif \
+            --fail-on high
+        continue-on-error: true
+      
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: security-results.sarif
+          category: secure-code-bot
+      
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && steps.scan.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const sarif = JSON.parse(fs.readFileSync('security-results.sarif', 'utf8'));
+            const results = sarif.runs[0].results;
+            
+            if (results.length === 0) {
+              return;
+            }
+            
+            let comment = '## 🔒 Security Scan Results\n\n';
+            comment += `Found **${results.length}** security issue(s):\n\n`;
+            
+            results.slice(0, 10).forEach((result, i) => {
+              const level = result.level === 'error' ? '🔴' : result.level === 'warning' ? '🟡' : '🟢';
+              const file = result.locations[0].physicalLocation.artifactLocation.uri;
+              const line = result.locations[0].physicalLocation.region.startLine;
+              
+              comment += `${i + 1}. ${level} **${result.ruleId}**\n`;
+              comment += `   - File: \`${file}:${line}\`\n`;
+              comment += `   - ${result.message.text}\n\n`;
+            });
+            
+            if (results.length > 10) {
+              comment += `\n_... and ${results.length - 10} more issues. View full results in the Security tab._\n`;
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+      
+      - name: Fail if critical issues found
+        if: steps.scan.outcome == 'failure'
+        run: |
+          echo "❌ Security scan failed. Please fix the issues before merging."
+          exit 1

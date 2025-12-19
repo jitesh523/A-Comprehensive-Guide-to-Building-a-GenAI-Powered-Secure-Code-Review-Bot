@@ -32,6 +32,15 @@ app.include_router(metrics_router)
 app.include_router(feedback_router)
 
 
+# Initialize database on startup
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database tables on startup"""
+    from app.models.db_session import init_db
+    init_db()
+    logger.info("Database initialized")
+
+
 class HealthResponse(BaseModel):
     status: str
     version: str
