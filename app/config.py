@@ -53,6 +53,14 @@ class Settings(BaseSettings):
     ENABLE_DISCORD_NOTIFICATIONS: bool = False
     NOTIFICATION_MIN_SEVERITY: str = "HIGH"  # Only notify for HIGH and CRITICAL
     
+    # Caching (Redis)
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+    ENABLE_CACHING: bool = True
+    CACHE_TTL_LLM: int = 86400  # 24 hours
+    CACHE_TTL_SCAN: int = 3600  # 1 hour
+    
     class Config:
         env_file = ".env"
         case_sensitive = True
