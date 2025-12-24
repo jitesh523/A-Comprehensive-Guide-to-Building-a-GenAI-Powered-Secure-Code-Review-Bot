@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Optional
 from app.scanners.scanner_with_context import ScannerWithContext
 from app.config import settings
+from app.utils.auto_fix_engine import AutoFixEngine
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +30,9 @@ def cli():
 @click.option('--output', '-o', type=click.Path(), help='Output file (default: stdout)')
 @click.option('--fail-on', type=click.Choice(['critical', 'high', 'medium', 'low', 'none']), default='critical', help='Fail build on severity')
 @click.option('--max-findings', type=int, default=None, help='Maximum findings to report')
-def scan(path: str, language: tuple, format: str, output: Optional[str], fail_on: str, max_findings: Optional[int]):
+@click.option('--suggest-fixes', is_flag=True, help='Generate fix suggestions for findings')
+@click.option('--auto-fix', is_flag=True, help='Automatically apply fixes (use with caution!)')
+def scan(path: str, language: tuple, format: str, output: Optional[str], fail_on: str, max_findings: Optional[int], suggest_fixes: bool, auto_fix: bool):
     """
     Scan code for security vulnerabilities.
     
@@ -37,11 +40,13 @@ def scan(path: str, language: tuple, format: str, output: Optional[str], fail_on
         secure-code-bot scan --path ./src --language python
         secure-code-bot scan --format sarif --output results.sarif
         secure-code-bot scan --fail-on high
+        secure-code-bot scan --suggest-fixes
+        secure-code-bot scan --auto-fix --path ./src
     """
-    asyncio.run(run_scan(path, language, format, output, fail_on, max_findings))
+    asyncio.run(run_scan(path, language, format, output, fail_on, max_findings, suggest_fixes, auto_fix))
 
 
-async def run_scan(path: str, languages: tuple, format: str, output: Optional[str], fail_on: str, max_findings: Optional[int]):
+async def run_scan(path: str, languages: tuple, format: str, output: Optional[str], fail_on: str, max_findings: Optional[int], suggest_fixes: bool, auto_fix: bool):
     """Execute the scan"""
     try:
         scanner = ScannerWithContext()
@@ -65,6 +70,29 @@ async def run_scan(path: str, languages: tuple, format: str, output: Optional[st
         # Limit findings if specified
         if max_findings and len(all_findings) > max_findings:
             all_findings = all_findings[:max_findings]
+        
+        # Generate fixes if requested
+        if suggest_fixes or auto_fix:
+            fix_engine = AutoFixEngine()
+            for finding in all_findings:
+                try:
+                    fix = await fix_engine.generate_fix(finding)
+                    if fix:
+                        finding['fix_suggestion'] = {
+                            'fixed_code': fix.fixed_code,
+                            'explanation': fix.explanation,
+                            'confidence': fix.confidence,
+                            'diff': fix.diff
+                        }
+                        
+                        # Apply fix if auto-fix is enabled
+                        if auto_fix:
+                            success = await fix_engine.apply_fix(fix, dry_run=False)
+                            finding['fix_applied'] = success
+                            if success:
+                                logger.info(f"✅ Applied fix to {fix.file_path}:{fix.line_number}")
+                except Exception as e:
+                    logger.warning(f"Failed to generate fix: {str(e)}")
         
         # Format output
         if format == 'json':
@@ -200,10 +228,40 @@ def determine_exit_code(findings: list, fail_on: str) -> int:
 
 
 @cli.command()
+@click.option('--finding-id', required=True, type=int, help='Finding ID to fix')
+@click.option('--dry-run', is_flag=True, help='Preview fix without applying')
+def fix(finding_id: int, dry_run: bool):
+    """
+    Apply a fix suggestion for a specific finding.
+    
+    Example:
+        secure-code-bot fix --finding-id 123
+        secure-code-bot fix --finding-id 123 --dry-run
+    """
+    asyncio.run(apply_fix(finding_id, dry_run))
+
+
+async def apply_fix(finding_id: int, dry_run: bool):
+    """Apply a fix for a specific finding"""
+    try:
+        # This would typically load the finding from database
+        # For now, we'll show a placeholder
+        logger.info(f"Loading finding #{finding_id}...")
+        click.echo(f"Fix command for finding #{finding_id}")
+        click.echo(f"Dry run: {dry_run}")
+        click.echo("\nNote: This feature requires database integration to load findings.")
+        click.echo("Use 'scan --suggest-fixes' or 'scan --auto-fix' instead.")
+    except Exception as e:
+        logger.error(f"Failed to apply fix: {str(e)}")
+        sys.exit(1)
+
+
+@cli.command()
 def version():
     """Show version information"""
     click.echo("Secure Code Review Bot v1.0.0")
     click.echo(f"Supported languages: Python, JavaScript, TypeScript, Go, Rust")
+    click.echo(f"Features: Auto-fix, Context-aware scanning, LLM verification")
 
 
 if __name__ == '__main__':

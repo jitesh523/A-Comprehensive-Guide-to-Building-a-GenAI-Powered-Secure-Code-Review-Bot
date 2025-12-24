@@ -106,6 +106,7 @@ curl http://localhost:8000/health
 
 ✅ **Scans Python, JavaScript, TypeScript, Go, and Rust** automatically  
 ✅ **AI-powered verification** using GPT-4  
+✅ **Intelligent auto-fix** - Generates code patches for vulnerabilities  
 ✅ **Privacy-safe** - strips secrets/PII before sending to AI  
 ✅ **Inline PR comments** with fix suggestions  
 ✅ **Cost-effective** - ~$0.01 per PR  
@@ -177,6 +178,7 @@ Post PR comments
 - **[Usage Examples](docs/USAGE.md)** - Real scenarios
 - **[Multi-Language Support](docs/MULTI_LANGUAGE.md)** - Language-specific details
 - **[CI/CD Integration](docs/CICD_INTEGRATION.md)** - GitHub Actions, GitLab CI, Jenkins
+- **[Auto-Fix Feature](docs/AUTO_FIX.md)** - Intelligent code patch generation
 
 ---
 
@@ -188,6 +190,12 @@ pip install -r requirements.txt
 
 # Scan your code
 python -m app.cli scan --path . --format sarif --fail-on high
+
+# Generate fix suggestions
+python -m app.cli scan --path . --suggest-fixes
+
+# Auto-fix vulnerabilities (creates backups)
+python -m app.cli scan --path ./src --auto-fix
 
 # Use in GitHub Actions (see .github/workflows/security-scan.yml)
 # Use in GitLab CI (see .gitlab-ci.yml)
