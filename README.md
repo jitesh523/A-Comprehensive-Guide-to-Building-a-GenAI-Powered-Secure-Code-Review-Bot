@@ -104,7 +104,7 @@ curl http://localhost:8000/health
 
 ## Features
 
-✅ **Scans Python, JavaScript, TypeScript, Go, and Rust** automatically  
+✅ **Scans Python, JavaScript, TypeScript, Go, Rust, Java, and C/C++** automatically  
 ✅ **AI-powered verification** using GPT-4  
 ✅ **Intelligent auto-fix** - Generates code patches for vulnerabilities  
 ✅ **Privacy-safe** - strips secrets/PII before sending to AI  
@@ -162,6 +162,8 @@ Post PR comments
 - **TypeScript** - ESLint with TypeScript parser
 - **Go** - Gosec security scanner
 - **Rust** - cargo-audit + cargo-clippy
+- **Java** - SpotBugs with Find Security Bugs plugin
+- **C/C++** - Cppcheck + Clang-Tidy
 
 **CI/CD Integration**:
 - **GitHub Actions** - Automated PR scanning with SARIF upload
@@ -210,7 +212,7 @@ python -m app.cli scan --path ./src --auto-fix
 A: No. Scans run in background (1-3 minutes). PRs aren't blocked.
 
 **Q: What languages are supported?**  
-A: Python, JavaScript, TypeScript, Go, and Rust. More coming soon.
+A: Python, JavaScript, TypeScript, Go, Rust, Java, and C/C++. More coming soon.
 
 **Q: Is my code sent to OpenAI?**  
 A: Only small snippets (10-20 lines) with secrets/PII removed.
