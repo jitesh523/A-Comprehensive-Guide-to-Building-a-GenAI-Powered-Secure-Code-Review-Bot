@@ -2,7 +2,6 @@
 Pydantic models for LLM structured outputs
 """
 from pydantic import BaseModel, Field
-from typing import Optional, List
 from enum import Enum
 
 
@@ -44,30 +43,30 @@ class VerificationResult(BaseModel):
         description="Explanation of the decision (10-500 characters)"
     )
     
-    severity: Optional[SeverityLevel] = Field(
+    severity: SeverityLevel | None = Field(
         default=None,
         description="Adjusted severity level if different from SAST finding"
     )
     
-    exploitability: Optional[str] = Field(
+    exploitability: str | None = Field(
         default=None,
         max_length=200,
         description="How the vulnerability could be exploited (if true positive)"
     )
     
-    remediation: Optional[str] = Field(
+    remediation: str | None = Field(
         default=None,
         max_length=300,
         description="Suggested fix or remediation steps (if true positive)"
     )
     
-    false_positive_reason: Optional[str] = Field(
+    false_positive_reason: str | None = Field(
         default=None,
         max_length=200,
         description="Why this is a false positive (if applicable)"
     )
     
-    cwe_ids: Optional[List[str]] = Field(
+    cwe_ids: list[str] | None = Field(
         default=None,
         description="Relevant CWE IDs (e.g., ['CWE-89', 'CWE-79'])"
     )
@@ -95,7 +94,7 @@ class VerificationRequest(BaseModel):
     severity: str = Field(description="SAST severity")
     description: str = Field(description="SAST finding description")
     code_context: str = Field(description="Sanitized code context")
-    function_name: Optional[str] = Field(default=None, description="Function name")
-    class_name: Optional[str] = Field(default=None, description="Class name")
+    function_name: str | None = Field(default=None, description="Function name")
+    class_name: str | None = Field(default=None, description="Class name")
     file_path: str = Field(description="File path")
     line_number: int = Field(description="Line number")
