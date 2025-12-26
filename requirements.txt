@@ -15,6 +15,7 @@ alembic==1.14.0
 
 # SAST Tools
 bandit==1.7.10
+pip-audit==2.7.3
 
 # Tree-sitter for Context Extraction
 tree-sitter==0.23.2
