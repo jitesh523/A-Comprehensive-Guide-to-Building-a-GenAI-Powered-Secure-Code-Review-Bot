@@ -30,6 +30,8 @@ presidio-anonymizer==2.2.360
 
 # LLM Integration
 openai==1.58.1
+anthropic==0.39.0
+google-generativeai==0.8.3
 tiktoken==0.8.0
 
 # Git Integration

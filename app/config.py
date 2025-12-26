@@ -35,6 +35,18 @@ class Settings(BaseSettings):
     OPENAI_TEMPERATURE: float = 0.1
     OPENAI_MAX_TOKENS: int = 2000
     
+    # Anthropic
+    ANTHROPIC_API_KEY: str | None = None
+    ANTHROPIC_MODEL: str = "claude-3-5-sonnet-20241022"
+    
+    # Google
+    GOOGLE_API_KEY: str | None = None
+    GOOGLE_MODEL: str = "gemini-1.5-pro"
+    
+    # LLM Provider Selection
+    LLM_PROVIDER: str = "openai"  # openai, anthropic, google, or auto
+    LLM_COST_BUDGET_MONTHLY: float = 1000.0  # Monthly budget in USD
+    
     # GitHub
     GITHUB_TOKEN: str | None = None
     GITHUB_WEBHOOK_SECRET: str | None = None
