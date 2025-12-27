@@ -1,0 +1,164 @@
+# Grafana Dashboard for Secure Code Review Bot
+# Import this JSON into Grafana to create the dashboard
+
+{
+    "dashboard": {
+        "title": "Secure Code Review Bot - Overview",
+        "tags": [
+            "security",
+            "code-review"
+        ],
+        "timezone": "browser",
+        "panels": [
+            {
+                "title": "Scan Requests (Total)",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "sum(scan_requests_total)",
+                        "legendFormat": "Total Scans"
+                    }
+                ],
+                "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            {
+                "title": "Active Scans",
+                "type": "gauge",
+                "targets": [
+                    {
+                        "expr": "active_scans",
+                        "legendFormat": "Active"
+                    }
+                ],
+                "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 6,
+                    "y": 0
+                }
+            },
+            {
+                "title": "LLM Cost (USD)",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "sum(llm_cost_usd_total)",
+                        "legendFormat": "Total Cost"
+                    }
+                ],
+                "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 12,
+                    "y": 0
+                }
+            },
+            {
+                "title": "Cache Hit Rate",
+                "type": "gauge",
+                "targets": [
+                    {
+                        "expr": "sum(cache_hits_total) / (sum(cache_hits_total) + sum(cache_misses_total)) * 100",
+                        "legendFormat": "Hit Rate %"
+                    }
+                ],
+                "gridPos": {
+                    "h": 4,
+                    "w": 6,
+                    "x": 18,
+                    "y": 0
+                }
+            },
+            {
+                "title": "Scan Duration by Language",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.95, sum(rate(scan_duration_seconds_bucket[5m])) by (language, le))",
+                        "legendFormat": "{{language}} (p95)"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 4
+                }
+            },
+            {
+                "title": "LLM Request Duration",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.95, sum(rate(llm_duration_seconds_bucket[5m])) by (provider, le))",
+                        "legendFormat": "{{provider}} (p95)"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 4
+                }
+            },
+            {
+                "title": "Findings by Severity",
+                "type": "piechart",
+                "targets": [
+                    {
+                        "expr": "sum(findings_total) by (severity)",
+                        "legendFormat": "{{severity}}"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 0,
+                    "y": 12
+                }
+            },
+            {
+                "title": "Findings by Language",
+                "type": "bargauge",
+                "targets": [
+                    {
+                        "expr": "sum(findings_total) by (language)",
+                        "legendFormat": "{{language}}"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 8,
+                    "y": 12
+                }
+            },
+            {
+                "title": "LLM Tokens Used",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "sum(rate(llm_tokens_total[5m])) by (provider, type)",
+                        "legendFormat": "{{provider}} - {{type}}"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 16,
+                    "y": 12
+                }
+            }
+        ],
+        "refresh": "30s",
+        "time": {
+            "from": "now-6h",
+            "to": "now"
+        }
+    }
+}
