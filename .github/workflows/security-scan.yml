@@ -10,6 +10,11 @@ jobs:
   security-scan:
     name: Security Code Review
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+      issues: write
     
     steps:
       - name: Checkout code
@@ -69,7 +74,7 @@ jobs:
         continue-on-error: true
       
       - name: Upload SARIF results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: security-results.sarif
