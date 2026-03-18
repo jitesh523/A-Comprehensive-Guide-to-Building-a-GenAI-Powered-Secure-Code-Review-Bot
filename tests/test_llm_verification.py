@@ -21,9 +21,19 @@ async def test_llm_verification():
     
     # Check if API key is configured
     from app.config import settings
-    if not settings.OPENAI_API_KEY:
+    provider = settings.LLM_PROVIDER
+    
+    if provider == "openai" and not settings.OPENAI_API_KEY:
         print("\n⚠️  OpenAI API key not configured!")
         print("   Set OPENAI_API_KEY in .env file to test LLM verification")
+        return
+    elif provider == "anthropic" and not settings.ANTHROPIC_API_KEY:
+        print("\n⚠️  Anthropic API key not configured!")
+        print("   Set ANTHROPIC_API_KEY in .env file to test LLM verification")
+        return
+    elif provider == "google" and not settings.GOOGLE_API_KEY:
+        print("\n⚠️  Google API key not configured!")
+        print("   Set GOOGLE_API_KEY in .env file to test LLM verification")
         return
     
     try:
@@ -126,8 +136,18 @@ async def test_batch_verification():
     print("=" * 60)
     
     from app.config import settings
-    if not settings.OPENAI_API_KEY:
-        print("\n⚠️  OpenAI API key not configured - skipping batch test")
+    provider = settings.LLM_PROVIDER
+    
+    has_key = False
+    if provider == "openai" and settings.OPENAI_API_KEY:
+        has_key = True
+    elif provider == "anthropic" and settings.ANTHROPIC_API_KEY:
+        has_key = True
+    elif provider == "google" and settings.GOOGLE_API_KEY:
+        has_key = True
+        
+    if not has_key:
+        print(f"\n⚠️  {provider.capitalize()} API key not configured - skipping batch test")
         return
     
     try:
