@@ -5,10 +5,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from app.config import settings
+
 app = FastAPI(
-    title="Secure Code Review Bot",
+    title=settings.APP_NAME,
     description="GenAI-Powered Hybrid Security Analysis System",
-    version="1.0.0"
+    version=settings.APP_VERSION
 )
 
 # CORS Configuration
@@ -52,9 +54,17 @@ async def health_check():
     """Health check endpoint"""
     return HealthResponse(
         status="healthy",
-        version="1.0.0",
+        version=settings.APP_VERSION,
         service="secure-code-review-bot"
     )
+
+@app.get("/version")
+async def get_version():
+    """Version check endpoint"""
+    return {
+        "version": settings.APP_VERSION,
+        "name": settings.APP_NAME
+    }
 
 
 @app.get("/")
@@ -64,9 +74,9 @@ async def root():
         "message": "Secure Code Review Bot API",
         "docs": "/docs",
         "health": "/health",
+        "version": "/version",
         "webhook": "/webhook/github"
     }
-
 
 if __name__ == "__main__":
     import uvicorn

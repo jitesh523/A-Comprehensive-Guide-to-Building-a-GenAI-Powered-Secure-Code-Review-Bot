@@ -20,10 +20,10 @@ pip-audit==2.7.3
 # Tree-sitter for Context Extraction
 tree-sitter==0.23.2
 tree-sitter-python==0.23.6
-tree-sitter-javascript==0.23.5
+tree-sitter-javascript==0.23.1
 tree-sitter-go==0.23.3
 tree-sitter-rust==0.23.2
-tree-sitter-typescript==0.23.1
+tree-sitter-typescript==0.23.2
 
 # Privacy & Sanitization
 presidio-analyzer==2.2.360

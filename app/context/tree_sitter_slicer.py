@@ -20,11 +20,8 @@ class TreeSitterContextSlicer:
     
     def __init__(self):
         # Initialize parsers for both languages
-        self.python_parser = Parser()
-        self.python_parser.set_language(Language(tspython.language()))
-        
-        self.javascript_parser = Parser()
-        self.javascript_parser.set_language(Language(tsjavascript.language()))
+        self.python_parser = Parser(Language(tspython.language()))
+        self.javascript_parser = Parser(Language(tsjavascript.language()))
     
     def extract_context(
         self, 
