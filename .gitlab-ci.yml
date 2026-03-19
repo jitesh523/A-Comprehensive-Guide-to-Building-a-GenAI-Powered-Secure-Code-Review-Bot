@@ -3,7 +3,7 @@ stages:
 
 security_scan:
   stage: security
-  image: python:3.11
+  image: python:3.12
   
   before_script:
     # Install system dependencies
