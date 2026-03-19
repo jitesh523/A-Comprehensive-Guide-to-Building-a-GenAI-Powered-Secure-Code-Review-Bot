@@ -34,14 +34,14 @@ ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Install Gradle
-ENV GRADLE_VERSION=8.5
+ENV GRADLE_VERSION=8.12.1
 RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip && \
     unzip gradle-${GRADLE_VERSION}-bin.zip -d /opt && \
     rm gradle-${GRADLE_VERSION}-bin.zip
 ENV PATH="/opt/gradle-${GRADLE_VERSION}/bin:${PATH}"
 
 # Install SpotBugs for Java security scanning
-ENV SPOTBUGS_VERSION=4.8.3
+ENV SPOTBUGS_VERSION=4.9.8
 RUN wget https://github.com/spotbugs/spotbugs/releases/download/${SPOTBUGS_VERSION}/spotbugs-${SPOTBUGS_VERSION}.tgz && \
     tar -xzf spotbugs-${SPOTBUGS_VERSION}.tgz -C /opt && \
     rm spotbugs-${SPOTBUGS_VERSION}.tgz
