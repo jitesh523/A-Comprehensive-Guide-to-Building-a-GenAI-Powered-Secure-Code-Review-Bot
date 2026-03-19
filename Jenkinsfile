@@ -2,9 +2,9 @@ pipeline {
     agent any
     
     environment {
-        PYTHON_VERSION = '3.11'
-        NODE_VERSION = '18'
-        GO_VERSION = '1.21'
+        PYTHON_VERSION = '3.12'
+        NODE_VERSION = '20'
+        GO_VERSION = '1.26'
     }
     
     stages {
